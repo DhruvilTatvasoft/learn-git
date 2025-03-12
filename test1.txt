@@ -32,3 +32,68 @@
                      .Take(maxRows).ToList();
         return userlist;
     }
+
+
+
+public List<users> getUsersForPage(int currentPage, int maxRows, string search, string sortBy, string sortOrder)
+{
+    var userQuery = from u in _context.Users
+                    where !u.Isdeleted
+                    select new
+                    {
+                        u.Userid,
+                        FullName = u.Firstname + " " + u.Lastname,
+                        u.Email,
+                        IsActive = u.Isactive ?? false,
+                        Phone = u.Phonenumber.ToString(),
+                        Role = _context.Roles.FirstOrDefault(r => r.Roleid == u.Roleid).Rolename,
+                        u.Profilephoto,
+                        u.Firstname,  // Keep original names for sorting
+                        u.Lastname
+                    };
+
+    // Apply search filter
+    if (!string.IsNullOrEmpty(search))
+    {
+        userQuery = userQuery.Where(x => x.FullName.ToLower().Contains(search.ToLower()));
+    }
+
+    // Apply sorting
+    switch (sortBy.ToLower())
+    {
+        case "name":
+            userQuery = sortOrder.Equals("asc", StringComparison.OrdinalIgnoreCase)
+                ? userQuery.OrderBy(u => u.Firstname).ThenBy(u => u.Lastname)
+                : userQuery.OrderByDescending(u => u.Firstname).ThenByDescending(u => u.Lastname);
+            break;
+
+        case "role":
+            userQuery = sortOrder.Equals("asc", StringComparison.OrdinalIgnoreCase)
+                ? userQuery.OrderBy(u => u.Role)
+                : userQuery.OrderByDescending(u => u.Role);
+            break;
+
+        default:
+            // Optional: Define a default sorting column (e.g., by UserId)
+            userQuery = userQuery.OrderBy(u => u.Userid);
+            break;
+    }
+
+    // Apply pagination
+    var userList = userQuery.Skip((currentPage - 1) * maxRows)
+                            .Take(maxRows)
+                            .ToList()
+                            .Select(u => new users
+                            {
+                                userid = u.Userid,
+                                name = u.FullName,
+                                Email = u.Email,
+                                IsActive = u.IsActive,
+                                phone = u.Phone,
+                                role = u.Role,
+                                profilepic = u.Profilephoto
+                            })
+                            .ToList();
+
+    return userList;
+}
