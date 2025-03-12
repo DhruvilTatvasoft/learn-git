@@ -1,7 +1,7 @@
 @{
   Layout = "~/Views/Shared/_Sidebar&navbar.cshtml";
 }
-@model UserDetailModel
+@model PermissionsModel2
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,216 +10,161 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
 </head>
-<link rel="stylesheet" href="~/css/myprofile.css">
+<link rel="stylesheet" href="~/css/permissions.css">
 <body>
   <div class="container-fluid w-100 h-100 p-0">
     <div id="nav-sidebar"></div>
     <div class="row p-0 h-100 d-flex">
-      <div class="content pt-3">
-        <div class="mb-4">
-          <h1>My Profile</h1>
-        </div>
-        <div class="form-container shadow">
-          <div class="bg-img">
-            <img src="~/images/profile_div_bg.jpg" class="profile-icon" style="height:90%;"alt="" />
-          </div>
-          <div class="d-flex">
-            <div class="pfp d-flex align-items-center justify-content-center">
-              <img src="@Model.ProfilePath" class="profile-icon" id="profileicon" alt="" style="object-fit: cover; border-radius: 50%;" />
-            </div>
-           <div class="row fileUploadRow me-1 ms-1 mb-3">
-            <div class="d-flex flex-column justify-content-start">
-              <h2>Admin</h2>
-              <h2 class="Username">@Model.username</h2>
-            </div>
-          </div>
 
-          <div>
-            <form class=" pe-3 pb-3 d-flex flex-column" method="Post" asp-controller="Dashboard" style="width:97%" asp-action="updateProfile" enctype="multipart/form-data">
-            <div class=" d-flex align-items-center justify-content-center camera-icon-container ">
-              <input type="file" asp-for="profilePicPath" id="fileUpload1" hidden onchange="changeprofilepic()">
-                                            <div class="row d-flex justify-content-center">
-                                                <label for="fileUpload1" class="fileUploadLabel d-flex">
-                                                    <img src="~/images/photo-camera-interface-symbol-for-button.png"
-                                                        id="profilepic">
-                                                </label>
-                                            </div>
-            </div>
-              <div class="form-group w-100">
-                <div>
-                  <div class="row">
-                    <div class="form-floating mb-2 col-6">
-                      <input type="text" class="form-control pb-1" id="floatingInput" placeholder="name@example.com"
-                        asp-for="firstname"  />
-                        <span asp-validation-for="firstname" class="mb-4 text-danger invalidmsg"></span>
-                      <label for="floatingInput">First Name</label>
-                    </div>
-                    <div class="form-floating mb-2 col-6">
-                      <input type="text" class="form-control" id="floatingInput" asp-for="lastname" ,
-                        placeholder="name@example.com" />
-                        <span asp-validation-for="lastname" class="mb-4 text-danger invalidmsg"></span>
-                      <label for="floatingInput">Last name</label>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="form-floating mb-2 col-6">
-                      <input type="text" class="form-control col-6" id="floatingInput" asp-for="username" ,
-                        placeholder="name@example.com" />
-                        <span asp-validation-for="username" class="mb-4 text-danger invalidmsg"></span>
-                      <label for="floatingInput">User Name</label>
-                    </div>
-                    <div class="form-floating mb-2 col-6">
-                      <input type="tel" class="form-control col-6" id="floatingInput" asp-for="Phone" ,
-                        placeholder="name@example.com" />
-                        <span asp-validation-for="Phone" class="mb-4 text-danger invalidmsg"></span>
-                      <label for="floatingInput">Phone</label>
-                    </div>
-                  </div>
-                  <div class="row mb-2">
-                    <div class="form-floating col-4">
-                      <select class="form-select"  id="countryid" asp-for="countryid" 
-                                                aria-label="Floating label select example">
-                                                @foreach (var item in Model.Country)
-                                                {
-                                                    <option value="@item.Countryid">@item.Countryname</option>
-                                                }
-                                            </select>
-                      <label for="floatingSelect">Country</label>
-                        <span asp-validation-for="countryid" class="mb-4 text-danger invalidmsg"></span>
-                    </div>
-                    <div class="form-floating col-4">
-                      <select class="form-select" id="stateid" asp-for="stateid" 
-                                                aria-label="Floating label select example">
-                                                <option value="">select state </option>
-                                            </select>
-                      <label for="floatingSelect">State</label>
-                        <span asp-validation-for="stateid" class="mb-4 text-danger invalidmsg"></span>
-                    </div>
-                    <div class="form-floating col-4">
-                      <select class="form-select" aria-label="Floating label select example" id="cityid"asp-for="cityid">
-                                                <option value="">select city</option>
-                                            </select>
-                                            <label for="floatingSelect">City</label>
-                        <span asp-validation-for="cityid" class="mb-4 text-danger invalidmsg"></span>
-                    </div>
-                    
-                  </div>
-
-                  <div class="row">
-                    <div class="form-floating mb-3 col-8">
-                      <input type="text" class="form-control" asp-for="address" , id="floatingInput"
-                        placeholder="name@example.com" />
-                      <label for="floatingInput">Address</label>
-                        <span asp-validation-for="address" class="mb-4 text-danger invalidmsg"></span>
-                    </div>
-                    <div class="form-floating mb-3 col-4">
-                      <input type="number" class="form-control" id="floatingInput" asp-for="Zipcode" ,
-                        placeholder="name@example.com" />
-                      <label for="floatingInput">Zipcode</label>
-                        <span asp-validation-for="Zipcode" class="mb-4 text-danger invalidmsg"></span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary me-2">
-                  Update
-                </button>
-                <button type="submit" class="btn btn-outline-primary">
-                 <a asp-action="ShowDashboard" asp-controller="Dashboard" style="text-decoration: none;">cancel</a>
-                </button>
-              </div>
+      <div class="content pt-3 w-100">
+        <div class="mb-4 header d-flex">
+          <h1>Permissions</h1>
+          <form method="get" class="back-form" asp-controller="Dashboard" asp-action="Roles">
+            <form asp-action="Roles" asp-controller="Dashboard">
+            <button class="btn btn-outline-primary me-3 w-100" type="submit">back</button>
             </form>
+          </form>
+        </div>
+        <div class="form-container shadow me-4 p-3">
+          <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="floatingInput" asp-for="rolename"
+              placeholder="name@example.com" disabled>
+            <label for="floatingInput" class="floatlabel">Role</label>
           </div>
+
+          <form id="form" method="post" asp-action="UpdatePermissions" asp-controller="Dashboard">
+                  <input type="hidden" name="roleid"  asp-for="roleid" value="@Model.roleid" id="flexSwitchCheckChecked" >
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">
+                      <div class="form-check">
+                        <input class="form-check-input " type="checkbox" value="" id="mastercheck">
+                        <label class="form-check-label" for="flexCheckDefault">
+                          Permissions
+                        </label>
+                      </div>
+                    </th>
+                    <th scope="col">can View</th>
+                    <th scope="col">can Add/Edit</th>
+                    <th scope="col">can Delete</th>
+                  </tr>
+                <tbody>       
+                </thead>
+                  @for (int i=0;i<Model.plist.Count;i++)
+                  {
+                    <tr>
+                          <input class="form-check-input toggle" type="text"  asp-for="@Model.permissionModel[i].PermissionId" value="@Model.plist[i].Permissionid" id="flexSwitchCheckChecked" hidden>
+                      <th scope="row">
+                        <div class="form-check">
+
+                          @if(Model.gpermissionid.Contains(@Model.plist[i].Permissionid)){
+
+                          <input class="form-check-input subcheck" type="checkbox" asp-for="@Model.permissionModel[i].IsChecked" id="flexCheckDefault" checked>
+                          }
+                          else{
+                          <input class="form-check-input subcheck" type="checkbox" asp-for="@Model.permissionModel[i].IsChecked" id="flexCheckDefault" >
+                          }
+                          <label class="form-check-label" for="flexCheckDefault">
+                            @Model.plist[i].Permissionname
+                          </label>
+                        </div>
+                      </th>
+                      <td>
+                       @* @Model.grantedPermissions.FirstOrDefault(g=>g.Permissionid == Model.plist[i].Permissionid)?.Canedit *@
+                        <div class="form-check form-switch">
+                          @if(@Model.grantedPermissions.FirstOrDefault(gp=>gp.Permissionid == Model.plist[i].Permissionid)?.Canview == true){
+                          <input class="form-check-input toggle" type="checkbox"  asp-for="@Model.permissionModel[i].can_view" id="flexSwitchCheckChecked" checked>
+                          
+                          }
+                          else{
+                          <input class="form-check-input toggle" type="checkbox"  asp-for="@Model.permissionModel[i].can_view" id="flexSwitchCheckChecked" >
+                          }
+                        </div>
+                      </td>
+                      <td>
+                        <div class="form-check form-switch">
+                         @if(@Model.grantedPermissions.FirstOrDefault(gp=>gp.Permissionid == Model.plist[i].Permissionid)?.Canedit == true){
+                          <input class="form-check-input toggle" type="checkbox"  asp-for="@Model.permissionModel[i].can_edit" id="flexSwitchCheckChecked" checked>
+                          }
+                          else{
+                          <input class="form-check-input toggle" type="checkbox"  asp-for="@Model.permissionModel[i].can_edit" id="flexSwitchCheckChecked" >
+                          
+                          }
+                        </div>
+                      </td>
+                      <td>
+                        <div class="form-check form-switch">
+                          
+                         @if(@Model.grantedPermissions.FirstOrDefault(gp=>gp.Permissionid == Model.plist[i].Permissionid)?.Candelete == true){
+                          <input class="form-check-input toggle" type="checkbox" asp-for="@Model.permissionModel[i].can_delete" id="flexSwitchCheckChecked" checked>
+                          
+                          }
+                          else{
+                          <input class="form-check-input toggle" type="checkbox"  asp-for="@Model.permissionModel[i].can_delete" id="flexSwitchCheckChecked" >
+                          
+                          }
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            <div class="w-25 h-50 d-flex justify-content-end" style="margin-left: auto;">
+              <button type="submit" class="btn btn-primary me-2 w-50 ">Update</button>
+              <button type="reset" class="btn btn-outline-primary w-50">cancel</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
+<script>
 
-  <script>
-     $(document).ready(function () {
-            var selectedCountry = $('#countryid').val();
-            var selectedState = '@Model.stateid';
-            var selectedCity = '@Model.cityid';
+  document.querySelector("#mastercheck").addEventListener("onchange",()=>{
+    var checkboxes = document.querySelectorAll(".subcheck");
+    forEach(checkbox in checkboxes){
+      if(checkbox.checked){
+        checkbox.checked = false;
+        }
+        else{
+          checkbox.checked = true;
+        }
+    }
+  })
+document.addEventListener("DOMContentLoaded", function () {
+    var subchecks = document.querySelectorAll(".subcheck");
 
-            
-            if (selectedCountry) {
-                $.getJSON('@Url.Action("GetStates")', { countryid: selectedCountry }, function (states) {
-
-                    var statesSelect = $('#stateid');
-
-                    statesSelect.empty();
-
-                    statesSelect.append('<option value="">Select State</option>');
-
-                    $.each(states, function (index, state) {
-                        var option = $('<option/>', {
-                            value: state.value,
-                            text: state.text
-                        });
-                        if (state.value == selectedState) {
-                            option.prop('selected', true);
-                        }
-                        statesSelect.append(option);
-                    });
-                    if (selectedState) {
-                        $.getJSON('@Url.Action("GetCities")', { stateid: selectedState }, function (cities) {
-
-                            var citiesSelect = $('#cityid');
-
-                            citiesSelect.empty();
-                            citiesSelect.append('<option value="">Select City</option>');
-                            $.each(cities, function (index, city) {
-                                var option = $('<option/>', {
-                                    value: city.value,
-                                    text: city.text
-                                });
-                                if (city.value == selectedCity) {
-                                    option.prop('selected', true);
-                                }
-                                citiesSelect.append(option);
-                            });
-                        });
-                    }
-                });
-            
-            $('#countryid').change(function () {
-                var countryid = $(this).val();
-                console.log(countryid);
-                $.getJSON('@Url.Action("GetStates")', { countryid: countryid }, function (states) {
-                    console.log("hello");
-                    var statesSelect = $('#stateid');
-                    statesSelect.empty();
-                    statesSelect.append('<option value="">Select State</option>');
-
-                    $.each(states, function (index, state) {
-                        statesSelect.append($('<option/>', {
-                            value: state.value,
-                            text: state.text
-                        }));
-                    });
-                    $('#cityid').empty().append('<option value="">Select City</option>');
-                });
-            });
-            $('#stateid').change(function () {
-                var stateid = $(this).val();
-                $.getJSON('@Url.Action("GetCities")', { stateid: stateid }, function (cities) {
-
-                    var citiesSelect = $('#cityid');
-                    citiesSelect.empty();
-                    citiesSelect.append('<option value="">Select City</option>');
-                    $.each(cities, function (index, city) {
-                        citiesSelect.append($('<option/>', {
-                            value: city.value,
-                            text: city.text
-                        }));
-                    });
-                });
-            });
+    subchecks.forEach(function (checkbox) {
+        checkbox.addEventListener("change", function () {
+            toggleSwitches(checkbox);
         });
 
+        
+        toggleSwitches(checkbox);
+    });
 
-  </script>
+    function toggleSwitches(checkbox) {
+        var row = checkbox.closest("tr");
+        var toggles = row.querySelectorAll(".toggle");
+
+        toggles.forEach(function (toggle) {
+            toggle.disabled = !checkbox.checked;
+            if (!checkbox.checked) {
+                toggle.checked = false; 
+            }
+        });
+    }
+});
+
+
+
+</script>
+
+
+  
 </body>
 
 </html>
