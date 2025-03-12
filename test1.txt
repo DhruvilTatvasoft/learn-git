@@ -1,99 +1,185 @@
- public List<users> getUsersForPage(int currentPage, int maxRows, string search,string sortBy,string sortOrder)
+@model userpagingdetailmodel
+<table class="table mb-0" id="table">
+  <thead>
+    <tr>
+      <th scope="col">
+        <label for="" class="ps-4">Name</label>
+        <a href="@Url.Action("getUsers", "Dashboard",new{sortBy = "name", sortOrder = Model.sortBy == "name" && Model.sortOrder == "asc" ? "desc" : "asc" })" >
+          <img src="~/images/icons8-sorting-arrows-50.png"  style="width: 15px;"alt=""></a>
+      </th>
+      <th scope="col">Email</th>
+      <th scope="col">phone</th>
+      <th scope="col">
+        <label for="">Role</label>
+        <a href="@Url.Action("getUsers", "Dashboard",new{sortBy = "role", sortOrder = Model.sortBy == "role" && Model.sortOrder == "asc" ? "desc" : "asc" })"><img src="~/images/icons8-sorting-arrows-50.png" onclick="sortTable()" style="width: 15px;"
+            alt=""></a>
+      </th>
+      <th scope="col">status</th>
+      <th scope="col">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (users user in Model.users)
     {
-        var user = (from u in _context.Users
-                    where u.Isdeleted == false
-                    select new users
-                    {
-                        userid = u.Userid,
-                        name = u.Firstname + " " + u.Lastname,
-                        Email = u.Email,
-                        IsActive = u.Isactive ?? false,
-                        phone = u.Phonenumber.ToString(),
-                        role = _context.Roles.FirstOrDefault(r => r.Roleid == u.Roleid).Rolename,
-                        profilepic = u.Profilephoto
-                    });
-
-        user = user.Where(x => search == null || x.name.ToLower().Contains(search.ToLower()));
-
-        if (sortBy.Equals("name", StringComparison.OrdinalIgnoreCase))
+      <tr>
+        @if (user.profilepic != null)
         {
-            user = sortOrder.Equals("asc", StringComparison.OrdinalIgnoreCase)
-                ? user.OrderBy(u => u.Firstname).ThenBy(u => u.Lastname)
-                : user.OrderByDescending(u => u.Firstname).ThenByDescending(u => u.Lastname);
+          <td class="ps-3" style="width:28%;"><img src="@user.profilepic" class="profile-icon me-3" id="profileicon" alt=""
+              style="object-fit: cover; " />@user.name</td>
         }
-        else if (sortBy.Equals("role", StringComparison.OrdinalIgnoreCase))
+        else
         {
-            user = sortOrder.Equals("asc", StringComparison.OrdinalIgnoreCase)
-                ? user.OrderBy(u => u.role)
-                : user.OrderByDescending(u => u.role);
+
+          <td class="ps-3"><img src="~/images/manager.png" class="profile-icon me-3" id="profileicon" alt=""
+              style="object-fit: cover; " />@user.name</td>
         }
+        <td>@user.Email</td>
+        <td>@user.phone</td>
+        <td>@user.role @user.userid</td>
+        <td>
+          @if (user.IsActive)
+          {
+            <span class="badge bg-success">Active</span>
+          }
+          else
+          {
+            <span class="badge bg-secondary">Inactive</span>
+          }
 
-        var userlist = user.Skip((currentPage - 1) * maxRows)
-                     .Take(maxRows).ToList();
-        return userlist;
+
+        <td class="align-items-center ">
+          <div class="d-flex justify-content-start w-100 pb-2 h-100">
+            <a href='@Url.Action("EditUser", "Dashboard", new { Id = @user.userid })'>
+              <img src="~/images/pencil-square.svg" style="cursor: pointer;" class="me-2" alt="">
+            </a>
+            <a>
+              <img src="~/images/trash-fill.svg" id="deleteuser" onclick="deleteuser(@user.userid)"
+                style="cursor: pointer;" alt="">
+            </a>
+          </div>
+        </td>
+      </tr>
     }
+  </tbody>
+</table>
+<div class="bg-white w-100 d-flex justify-content-end align-items-center pe-2">
+  <label for="items per page:" class="me-3" style="font-size: 16px;">items per page : </label>
+  <div class="dropdown mt-2 me-2">
+    <select class="form-select form-select-lg mb-3" id="recordPerPage" onchange="loadRows()"
+      aria-label=".form-select-lg example">
+      <option value="5" selected="@(Model.maxRows == 5)">5</option>
+      <option value="10" selected="@(Model.maxRows == 10)">10</option>
+      <option value="15" selected="@(Model.maxRows == 15)">15</option>
+      <option value="20" selected="@(Model.maxRows == 20)">20</option>
+      <input type="text" hidden id="hiddenfield">
+
+  </div>
+  <label for="" class="me-2">Showing @Model.CurrentPageIndex of @(Model.totalusers)</label>
+
+  <div class="d-flex mt-1">
+    <button type="button" id="previous" class="btn btn-outline-dark btn2" data-page="@(Model.CurrentPageIndex - 1)"
+      style="
+                              padding: 6px;" @(Model.CurrentPageIndex == 1 ? "disabled" : "")><img
+        src="~/images/right-arrow-svgrepo-com.svg" style="width:25px; rotate: 180deg;" alt=""></button>
+    <button type="button" id="next" class="btn btn-outline-dark btn2 mb-2" data-page="@(Model.CurrentPageIndex + 1)"
+      data-page="@(Model.CurrentPageIndex + 1)" style="
+                              padding: 6px;" @(Model.CurrentPageIndex == Model.PageCount ? "disabled" : "")><img
+        src="~/images/right-arrow-svgrepo-com.svg" style="width:25px" alt=""></button>
+  </div>
+
+  <script>
+
+
+    $("#next").click(function () {
+      var currentpage = $(this).data('page');
+      $.ajax({
+        url: '@Url.Action("getUsers", "Dashboard")',
+        data: { currentPage: currentpage, search: $("#search-record").val(), maxRows: $('#recordPerPage').val() },
+        method: 'GET',
+        success: function (data) {
+          $("#t-container").html(data);
+          console.log($('#recordPerPage').val());
+        },
+        error: function () {
+          console.error('Error fetching partial view.');
+        }
+      });
+    });
+    $("#previous").click(function () {
+      var currentpage = $(this).data('page');
+      $.ajax({
+        url: '@Url.Action("getUsers", "Dashboard")',
+        data: { currentPage: currentpage, search: $("#search-record").val(), maxRows: $('#recordPerPage').val() },
+        method: 'GET',
+        success: function (data) {
+          $("#t-container").html(data);
+          console.log(@Model.CurrentPageIndex);
+          console.log(currentpage);
+          console.log($('#recordPerPage').val());
+        },
+        error: function () {
+          console.error('Error fetching partial view.');
+        }
+      });
+    });
+
+    function deleteuser(userid) {
+      $.ajax({
+        url: '@Url.Action("DeleteUser", "Dashboard")',
+        type: 'GET',
+        data: { Id: userid },
+        success: function (response) {
+          @* $.(body).html(response); *@
+            $("table").html(response)
+        },
+      });
+    };
+    function edituser(userid) {
+      console.log("OK");
+      $.ajax({
+        url: '@Url.Action("EditUser", "Dashboard")',
+        type: 'GET',
+        data: { Id: userid },
+        success: function (response) {
+          console.log($('#recordPerPage').val());
+          @* Window.location.href = '@Url.Action("EditUser", "Dashboard")'+'?Id='+userid; *@
+        },
+      });
+    };
+
+    function loadRows() {
+      console.log("OK");
+      var currentpage = $(this).data('page');
+
+      $.ajax({
+        url: '@Url.Action("getUsers", "Dashboard")',
+        type: 'GET',
+        data: { currentPage: currentpage, search: $("#search-record").val(), maxRows: $('#recordPerPage').val() },
+        success: function (response) {
+          $("#t-container").html(response);
+          console.log($('#recordPerPage').val());
+        },
+      });
+    };
+
+    function sortTable() {
+
+
+      $.ajax({
+        url: '@Url.Action("getUsers", "Dashboard")',
+        type: 'GET',
+        data: { currentPage: currentpage, search: $("#search-record").val(), maxRows: $('#recordPerPage').val() },
+        success: function (response) {
+          $("#t-container").html(response);
+          console.log($('#recordPerPage').val());
+        },
+      });
+    };
+
+
+    
 
 
 
-public List<users> getUsersForPage(int currentPage, int maxRows, string search, string sortBy, string sortOrder)
-{
-    var userQuery = from u in _context.Users
-                    where !u.Isdeleted
-                    select new
-                    {
-                        u.Userid,
-                        FullName = u.Firstname + " " + u.Lastname,
-                        u.Email,
-                        IsActive = u.Isactive ?? false,
-                        Phone = u.Phonenumber.ToString(),
-                        Role = _context.Roles.FirstOrDefault(r => r.Roleid == u.Roleid).Rolename,
-                        u.Profilephoto,
-                        u.Firstname,  // Keep original names for sorting
-                        u.Lastname
-                    };
-
-    // Apply search filter
-    if (!string.IsNullOrEmpty(search))
-    {
-        userQuery = userQuery.Where(x => x.FullName.ToLower().Contains(search.ToLower()));
-    }
-
-    // Apply sorting
-    switch (sortBy.ToLower())
-    {
-        case "name":
-            userQuery = sortOrder.Equals("asc", StringComparison.OrdinalIgnoreCase)
-                ? userQuery.OrderBy(u => u.Firstname).ThenBy(u => u.Lastname)
-                : userQuery.OrderByDescending(u => u.Firstname).ThenByDescending(u => u.Lastname);
-            break;
-
-        case "role":
-            userQuery = sortOrder.Equals("asc", StringComparison.OrdinalIgnoreCase)
-                ? userQuery.OrderBy(u => u.Role)
-                : userQuery.OrderByDescending(u => u.Role);
-            break;
-
-        default:
-            // Optional: Define a default sorting column (e.g., by UserId)
-            userQuery = userQuery.OrderBy(u => u.Userid);
-            break;
-    }
-
-    // Apply pagination
-    var userList = userQuery.Skip((currentPage - 1) * maxRows)
-                            .Take(maxRows)
-                            .ToList()
-                            .Select(u => new users
-                            {
-                                userid = u.Userid,
-                                name = u.FullName,
-                                Email = u.Email,
-                                IsActive = u.IsActive,
-                                phone = u.Phone,
-                                role = u.Role,
-                                profilepic = u.Profilephoto
-                            })
-                            .ToList();
-
-    return userList;
-}
+  </script>
+</div>
