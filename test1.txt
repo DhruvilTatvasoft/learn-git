@@ -1,148 +1,23 @@
-@{
-  Layout = "~/Views/Shared/_Sidebar&navbar.cshtml";
-}
-@model PermissionsModel2
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<link rel="stylesheet" href="~/css/permissions.css">
-<body>
-  <div class="container-fluid w-100 h-100 p-0">
-    <div id="nav-sidebar"></div>
-    <div class="row p-0 h-100 d-flex">
-
-      <div class="content pt-3 w-100">
-        <div class="mb-4 header d-flex">
-          <h1>Permissions</h1>
-          <form method="get" class="back-form" asp-controller="Dashboard" asp-action="Roles">
-            <form asp-action="Roles" asp-controller="Dashboard">
-            <button class="btn btn-outline-primary me-3 w-100" type="submit">back</button>
-            </form>
-          </form>
-        </div>
-        <div class="form-container shadow me-4 p-3">
-          <div class="form-floating mb-3">
-            <input type="email" class="form-control" id="floatingInput" asp-for="rolename"
-              placeholder="name@example.com" disabled>
-            <label for="floatingInput" class="floatlabel">Role</label>
-          </div>
-
-          <form id="form" method="post" asp-action="UpdatePermissions" asp-controller="Dashboard">
-                  <input type="hidden" name="roleid"  asp-for="roleid" value="@Model.roleid" id="flexSwitchCheckChecked" >
-            <div class="table-container">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th scope="col">
-                      <div class="form-check">
-                        <input class="form-check-input " type="checkbox" value="" id="mastercheck">
-                        <label class="form-check-label" for="flexCheckDefault">
-                          Permissions
-                        </label>
-                      </div>
-                    </th>
-                    <th scope="col">can View</th>
-                    <th scope="col">can Add/Edit</th>
-                    <th scope="col">can Delete</th>
-                  </tr>
-                <tbody>       
-                </thead>
-                  @for (int i=0;i<Model.plist.Count;i++)
-                  {
-                    <tr>
-                          <input class="form-check-input toggle" type="text"  asp-for="@Model.permissionModel[i].PermissionId" value="@Model.plist[i].Permissionid" id="flexSwitchCheckChecked" hidden>
-                      <th scope="row">
-                        <div class="form-check">
-
-                          @if(Model.gpermissionid.Contains(@Model.plist[i].Permissionid)){
-
-                          <input class="form-check-input subcheck" type="checkbox" asp-for="@Model.permissionModel[i].IsChecked" id="flexCheckDefault" checked>
-                          }
-                          else{
-                          <input class="form-check-input subcheck" type="checkbox" asp-for="@Model.permissionModel[i].IsChecked" id="flexCheckDefault" >
-                          }
-                          <label class="form-check-label" for="flexCheckDefault">
-                            @Model.plist[i].Permissionname
-                          </label>
-                        </div>
-                      </th>
-                      <td>
-                       @* @Model.grantedPermissions.FirstOrDefault(g=>g.Permissionid == Model.plist[i].Permissionid)?.Canedit *@
-                        <div class="form-check form-switch">
-                          @if(@Model.grantedPermissions.FirstOrDefault(gp=>gp.Permissionid == Model.plist[i].Permissionid)?.Canview == true){
-                          <input class="form-check-input toggle" type="checkbox"  asp-for="@Model.permissionModel[i].can_view" id="flexSwitchCheckChecked" checked>
-                          
-                          }
-                          else{
-                          <input class="form-check-input toggle" type="checkbox"  asp-for="@Model.permissionModel[i].can_view" id="flexSwitchCheckChecked" >
-                          }
-                        </div>
-                      </td>
-                      <td>
-                        <div class="form-check form-switch">
-                         @if(@Model.grantedPermissions.FirstOrDefault(gp=>gp.Permissionid == Model.plist[i].Permissionid)?.Canedit == true){
-                          <input class="form-check-input toggle" type="checkbox"  asp-for="@Model.permissionModel[i].can_edit" id="flexSwitchCheckChecked" checked>
-                          }
-                          else{
-                          <input class="form-check-input toggle" type="checkbox"  asp-for="@Model.permissionModel[i].can_edit" id="flexSwitchCheckChecked" >
-                          
-                          }
-                        </div>
-                      </td>
-                      <td>
-                        <div class="form-check form-switch">
-                          
-                         @if(@Model.grantedPermissions.FirstOrDefault(gp=>gp.Permissionid == Model.plist[i].Permissionid)?.Candelete == true){
-                          <input class="form-check-input toggle" type="checkbox" asp-for="@Model.permissionModel[i].can_delete" id="flexSwitchCheckChecked" checked>
-                          
-                          }
-                          else{
-                          <input class="form-check-input toggle" type="checkbox"  asp-for="@Model.permissionModel[i].can_delete" id="flexSwitchCheckChecked" >
-                          
-                          }
-                        </div>
-                      </td>
-                    </tr>
-                  }
-                </tbody>
-              </table>
-            </div>
-            <div class="w-25 h-50 d-flex justify-content-end" style="margin-left: auto;">
-              <button type="submit" class="btn btn-primary me-2 w-50 ">Update</button>
-              <button type="reset" class="btn btn-outline-primary w-50">cancel</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-<script>
-
-  document.querySelector("#mastercheck").addEventListener("onchange",()=>{
-    var checkboxes = document.querySelectorAll(".subcheck");
-    forEach(checkbox in checkboxes){
-      if(checkbox.checked){
-        checkbox.checked = false;
-        }
-        else{
-          checkbox.checked = true;
-        }
-    }
-  })
 document.addEventListener("DOMContentLoaded", function () {
-    var subchecks = document.querySelectorAll(".subcheck");
+    var masterCheck = document.querySelector("#mastercheck");
+    var subChecks = document.querySelectorAll(".subcheck");
 
-    subchecks.forEach(function (checkbox) {
-        checkbox.addEventListener("change", function () {
+    // Master checkbox change event
+    masterCheck.addEventListener("change", function () {
+        var isChecked = this.checked;
+        subChecks.forEach(function (checkbox) {
+            checkbox.checked = isChecked;
             toggleSwitches(checkbox);
         });
+    });
 
-        
+    // Individual subcheck change event
+    subChecks.forEach(function (checkbox) {
+        checkbox.addEventListener("change", function () {
+            toggleSwitches(checkbox);
+            updateMasterCheck();
+        });
+
         toggleSwitches(checkbox);
     });
 
@@ -153,18 +28,13 @@ document.addEventListener("DOMContentLoaded", function () {
         toggles.forEach(function (toggle) {
             toggle.disabled = !checkbox.checked;
             if (!checkbox.checked) {
-                toggle.checked = false; 
+                toggle.checked = false;
             }
         });
     }
+
+    function updateMasterCheck() {
+        var allChecked = Array.from(subChecks).every(chk => chk.checked);
+        masterCheck.checked = allChecked;
+    }
 });
-
-
-
-</script>
-
-
-  
-</body>
-
-</html>
