@@ -1,232 +1,234 @@
-@model userpagingdetailmodel
-<table class="table mb-0" id="table">
-  <thead>
-    <tr>
-      <th scope="col">
-        <label for="" class="ps-4">Name</label>
-        <a href="@Url.Action("getUsers", "Dashboard",new{sortBy = "name", sortOrder = Model.sortBy == "name" && Model.sortOrder == "asc" ? "desc" : "asc" })" >
-          <img src="~/images/icons8-sorting-arrows-50.png"  style="width: 15px;"alt=""></a>
-      </th>
-      <th scope="col">Email</th>
-      <th scope="col">phone</th>
-      <th scope="col">
-        <label for="">Role</label>
-        <a href="@Url.Action("getUsers", "Dashboard",new{sortBy = "role", sortOrder = Model.sortBy == "role" && Model.sortOrder == "asc" ? "desc" : "asc" })"><img src="~/images/icons8-sorting-arrows-50.png" onclick="sortTable()" style="width: 15px;"
-            alt=""></a>
-      </th>
-      <th scope="col">status</th>
-      <th scope="col">Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    @foreach (users user in Model.users)
-    {
-      <tr>
-        @if (user.profilepic != null)
-        {
-          <td class="ps-3" style="width:28%;"><img src="@user.profilepic" class="profile-icon me-3" id="profileicon" alt=""
-              style="object-fit: cover; " />@user.name</td>
-        }
-        else
-        {
+@{
+  Layout = "~/Views/Shared/_Sidebar&navbar.cshtml";
+}
+@model UserDetailModel
+<!DOCTYPE html>
+<html lang="en">
 
-          <td class="ps-3"><img src="~/images/manager.png" class="profile-icon me-3" id="profileicon" alt=""
-              style="object-fit: cover; " />@user.name</td>
-        }
-        <td>@user.Email</td>
-        <td>@user.phone</td>
-        <td>@user.role @user.userid</td>
-        <td>
-          @if (user.IsActive)
-          {
-            <span class="badge bg-success">Active</span>
-          }
-          else
-          {
-            <span class="badge bg-secondary">Inactive</span>
-          }
-
-
-        <td class="align-items-center ">
-          <div class="d-flex justify-content-start w-100 pb-2 h-100">
-            <a href='@Url.Action("EditUser", "Dashboard", new { Id = @user.userid })'>
-              <img src="~/images/pencil-square.svg" style="cursor: pointer;" class="me-2" alt="">
-            </a>
-            <a>
-              <img src="~/images/trash-fill.svg" id="deleteuser" onclick="deleteuser(@user.userid)"
-                style="cursor: pointer;" alt="">
-            </a>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<link rel="stylesheet" href="~/css/myprofile.css">
+<body>
+  <div class="container-fluid w-100 h-100 p-0">
+    <div id="nav-sidebar"></div>
+    <div class="row p-0 h-100 d-flex">
+      <div class="content pt-3">
+        <div class="mb-4">
+          <h1>My Profile</h1>
+        </div>
+        <div class="form-container shadow">
+          <div class="bg-img">
+            <img src="~/images/profile_div_bg.jpg" class="profile-icon" style="height:90%;"alt="" />
           </div>
-        </td>
-      </tr>
-    }
-  </tbody>
-</table>
-<div class="bg-white w-100 d-flex justify-content-end align-items-center pe-2">
-  <label for="items per page:" class="me-3" style="font-size: 16px;">items per page : </label>
-  <div class="dropdown mt-2 me-2">
-    <select class="form-select form-select-lg mb-3" id="recordPerPage" onchange="loadRows()"
-      aria-label=".form-select-lg example">
-      <option value="5" selected="@(Model.maxRows == 5)">5</option>
-      <option value="10" selected="@(Model.maxRows == 10)">10</option>
-      <option value="15" selected="@(Model.maxRows == 15)">15</option>
-      <option value="20" selected="@(Model.maxRows == 20)">20</option>
-      <input type="text" hidden id="hiddenfield">
+          <div class="d-flex">
+            <div class="pfp d-flex align-items-center justify-content-center">
+              <img src="@Model.ProfilePath" class="profile-icon" id="profileicon" alt="" style="object-fit: cover; border-radius: 50%;" />
+            </div>
+           <div class="row fileUploadRow me-1 ms-1 mb-3">
+            <div class="d-flex flex-column justify-content-start">
+              <h2>Admin</h2>
+              <h2 class="Username">@Model.username</h2>
+            </div>
+          </div>
 
-  </div>
-  <label for="" class="me-2">Showing @Model.CurrentPageIndex of @(Model.totalusers)</label>
+          <div>
+            <form class=" pe-3 pb-3 d-flex flex-column" method="Post" asp-controller="Dashboard" style="width:97%" asp-action="updateProfile" enctype="multipart/form-data">
+            <div class=" d-flex align-items-center justify-content-center camera-icon-container ">
+              <input type="file" asp-for="profilePicPath" id="fileUpload1" hidden onchange="changeprofilepic()">
+                                            <div class="row d-flex justify-content-center">
+                                                <label for="fileUpload1" class="fileUploadLabel d-flex">
+                                                    <img src="~/images/photo-camera-interface-symbol-for-button.png"
+                                                        id="profilepic">
+                                                </label>
+                                            </div>
+            </div>
+              <div class="form-group w-100">
+                <div>
+                  <div class="row">
+                    <div class="form-floating mb-2 col-6">
+                      <input type="text" class="form-control pb-1" id="floatingInput" placeholder="name@example.com"
+                        asp-for="firstname"  />
+                        <span asp-validation-for="firstname" class="mb-4 text-danger invalidmsg"></span>
+                      <label for="floatingInput">First Name</label>
+                    </div>
+                    <div class="form-floating mb-2 col-6">
+                      <input type="text" class="form-control" id="floatingInput" asp-for="lastname" ,
+                        placeholder="name@example.com" />
+                        <span asp-validation-for="lastname" class="mb-4 text-danger invalidmsg"></span>
+                      <label for="floatingInput">Last name</label>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="form-floating mb-2 col-6">
+                      <input type="text" class="form-control col-6" id="floatingInput" asp-for="username" ,
+                        placeholder="name@example.com" />
+                        <span asp-validation-for="username" class="mb-4 text-danger invalidmsg"></span>
+                      <label for="floatingInput">User Name</label>
+                    </div>
+                    <div class="form-floating mb-2 col-6">
+                      <input type="tel" class="form-control col-6" id="floatingInput" asp-for="Phone" ,
+                        placeholder="name@example.com" />
+                        <span asp-validation-for="Phone" class="mb-4 text-danger invalidmsg"></span>
+                      <label for="floatingInput">Phone</label>
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <div class="form-floating col-4">
+                      <select class="form-select"  id="countryid" asp-for="countryid" 
+                                                aria-label="Floating label select example">
+                                                @foreach (var item in Model.Country)
+                                                {
+                                                    <option value="@item.Countryid">@item.Countryname</option>
+                                                }
+                                            </select>
+                      <label for="floatingSelect">Country</label>
+                        <span asp-validation-for="countryid" class="mb-4 text-danger invalidmsg"></span>
+                    </div>
+                    <div class="form-floating col-4">
+                      <select class="form-select" id="stateid" asp-for="stateid" 
+                                                aria-label="Floating label select example">
+                                                <option value="">select state </option>
+                                            </select>
+                      <label for="floatingSelect">State</label>
+                        <span asp-validation-for="stateid" class="mb-4 text-danger invalidmsg"></span>
+                    </div>
+                    <div class="form-floating col-4">
+                      <select class="form-select" aria-label="Floating label select example" id="cityid"asp-for="cityid">
+                                                <option value="">select city</option>
+                                            </select>
+                                            <label for="floatingSelect">City</label>
+                        <span asp-validation-for="cityid" class="mb-4 text-danger invalidmsg"></span>
+                    </div>
+                    
+                  </div>
 
-  <div class="d-flex mt-1">
-    <button type="button" id="previous" class="btn btn-outline-dark btn2" data-page="@(Model.CurrentPageIndex - 1)"
-      style="
-                              padding: 6px;" @(Model.CurrentPageIndex == 1 ? "disabled" : "")><img
-        src="~/images/right-arrow-svgrepo-com.svg" style="width:25px; rotate: 180deg;" alt=""></button>
-    <button type="button" id="next" class="btn btn-outline-dark btn2 mb-2" data-page="@(Model.CurrentPageIndex + 1)"
-      data-page="@(Model.CurrentPageIndex + 1)" style="
-                              padding: 6px;" @(Model.CurrentPageIndex == Model.PageCount ? "disabled" : "")><img
-        src="~/images/right-arrow-svgrepo-com.svg" style="width:25px" alt=""></button>
+                  <div class="row">
+                    <div class="form-floating mb-3 col-8">
+                      <input type="text" class="form-control" asp-for="address" , id="floatingInput"
+                        placeholder="name@example.com" />
+                      <label for="floatingInput">Address</label>
+                        <span asp-validation-for="address" class="mb-4 text-danger invalidmsg"></span>
+                    </div>
+                    <div class="form-floating mb-3 col-4">
+                      <input type="number" class="form-control" id="floatingInput" asp-for="Zipcode" ,
+                        placeholder="name@example.com" />
+                      <label for="floatingInput">Zipcode</label>
+                        <span asp-validation-for="Zipcode" class="mb-4 text-danger invalidmsg"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary me-2">
+                  Update
+                </button>
+                <button type="submit" class="btn btn-outline-primary">
+                 <a asp-action="ShowDashboard" asp-controller="Dashboard" style="text-decoration: none;">cancel</a>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
+       
+      function changeprofilepic(){
+        let input = document.querySelector("#fileUpload1").files[0];
+        document.querySelector("#profileicon").src = "/images/"+input.name;
+        console.log(input);
+      }
 
-
-    $("#next").click(function () {
-      var currentpage = $(this).data('page');
-      $.ajax({
-        url: '@Url.Action("getUsers", "Dashboard")',
-        data: { currentPage: currentpage, search: $("#search-record").val(), maxRows: $('#recordPerPage').val() },
-        method: 'GET',
-        success: function (data) {
-          $("#t-container").html(data);
-          console.log($('#recordPerPage').val());
-        },
-        error: function () {
-          console.error('Error fetching partial view.');
-        }
-      });
-    });
-    $("#previous").click(function () {
-      var currentpage = $(this).data('page');
-      $.ajax({
-        url: '@Url.Action("getUsers", "Dashboard")',
-        data: { currentPage: currentpage, search: $("#search-record").val(), maxRows: $('#recordPerPage').val() },
-        method: 'GET',
-        success: function (data) {
-          $("#t-container").html(data);
-          console.log(@Model.CurrentPageIndex);
-          console.log(currentpage);
-          console.log($('#recordPerPage').val());
-        },
-        error: function () {
-          console.error('Error fetching partial view.');
-        }
-      });
-    });
-
-    function deleteuser(userid) {
-      $.ajax({
-        url: '@Url.Action("DeleteUser", "Dashboard")',
-        type: 'GET',
-        data: { Id: userid },
-        success: function (response) {
-          @* $.(body).html(response); *@
-            $("table").html(response)
-        },
-      });
-    };
-    function edituser(userid) {
-      console.log("OK");
-      $.ajax({
-        url: '@Url.Action("EditUser", "Dashboard")',
-        type: 'GET',
-        data: { Id: userid },
-        success: function (response) {
-          console.log($('#recordPerPage').val());
-          @* Window.location.href = '@Url.Action("EditUser", "Dashboard")'+'?Id='+userid; *@
-        },
-      });
-    };
-
-    function loadRows() {
-      console.log("OK");
-      var currentpage = $(this).data('page');
-
-      $.ajax({
-        url: '@Url.Action("getUsers", "Dashboard")',
-        type: 'GET',
-        data: { currentPage: currentpage, search: $("#search-record").val(), maxRows: $('#recordPerPage').val() },
-        success: function (response) {
-          $("#t-container").html(response);
-          console.log($('#recordPerPage').val());
-        },
-      });
-    };
-
-    function sortTable() {
-
-
-      $.ajax({
-        url: '@Url.Action("getUsers", "Dashboard")',
-        type: 'GET',
-        data: { currentPage: currentpage, search: $("#search-record").val(), maxRows: $('#recordPerPage').val() },
-        success: function (response) {
-          $("#t-container").html(response);
-          console.log($('#recordPerPage').val());
-        },
-      });
-    };
-
-
-    
-
-
-
-  </script>
-</div>
-
-
-
-
-<script>
-    $(document).ready(function () {
-        $(".sort-link").click(function (event) {
-            event.preventDefault(); // Prevent page reload
-
-            var url = $(this).attr("href"); // Get sorting URL
-
-            $.ajax({
-                url: url,
-                type: "GET",
-                success: function (data) {
-                    $("#t-container").html(data); // Load response into #t-container
-                },
-                error: function () {
-                    console.error("Error loading sorted data.");
+       $(document).ready(function () {
+       
+        var selectedCountry = $('#countryid').value;
+        var selectedState = '@Model.stateid';
+        var selectedCity = '@Model.cityid';
+        if (selectedCountry) {
+            $.getJSON('@Url.Action("GetStates")', { countryid: selectedCountry }, function (states) {
+                var statesSelect = $('#stateid');
+                statesSelect.empty();
+                statesSelect.append('<option value="">Select State</option>');
+                $.each(states, function (index, state) {
+                    var option = $('<option/>', {
+                        value: state.value,
+                        text: state.text
+                    });
+                    if (state.value == selectedState) {
+                        option.prop('selected', true);
+                    }
+                    statesSelect.append(option);
+                });
+                if (selectedState) {
+                    $.getJSON('@Url.Action("GetCities")', { stateid: selectedState }, function (cities) {    
+                        var citiesSelect = $('#cityid');
+                        citiesSelect.empty();
+                        citiesSelect.append('<option value="">Select City</option>');
+                        $.each(cities, function (index, city) {
+                            var option = $('<option/>', {
+                                value: city.value,
+                                text: city.text
+                            });
+                            if (city.value == selectedCity) {
+                                option.prop('selected', true);
+                            }
+                            citiesSelect.append(option);
+                        });
+                    });
                 }
+            });
+        }
+      
+        $('#countryid').change(function () {
+      
+            var countryid = $(this).val();
+            console.log(countryid);
+                  $.getJSON('@Url.Action("GetStates")', { countryid: countryid }, function (states) {
+                 console.log("hello");
+                      var statesSelect = $('#stateid');
+      
+                statesSelect.empty();
+                      statesSelect.append('<option value="">Select State</option>');
+                
+      
+                $.each(states, function (index, state) {
+                    statesSelect.append($('<option/>', {
+                        value: state.value,
+                        text: state.text
+                    }));
+                });
+                      $('#cityid').empty().append('<option value="">Select City</option>');
+            });
+        });
+              $('#stateid').change(function () {
+      
+            var stateid = $(this).val();
+      
+            $.getJSON('@Url.Action("GetCities")', { stateid: stateid }, function (cities) {
+                
+      
+                var citiesSelect = $('#cityid');
+      
+                citiesSelect.empty();
+                                citiesSelect.append('<option value="">Select City</option>');
+                 iterated over.
+                $.each(cities, function (index, city) {
+                    citiesSelect.append($('<option/>', {
+                        value: city.value,
+                        text: city.text
+                    }));
+                });
             });
         });
     });
+
+    
 </script>
-How It Works
-Prevents the anchor tag from navigating away.
-Fetches the sorting URL dynamically from the href attribute.
-Sends an AJAX GET request to fetch sorted data.
-Updates the #t-container div with the new sorted table.
-Let me know if you need further modifications!
+</body>
 
-
-
-
-
-
-
-
-
-
-
-Search
-
-Reason
-
-
-ChatGPT ca
+</html>
