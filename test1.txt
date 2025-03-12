@@ -183,3 +183,50 @@
 
   </script>
 </div>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $(".sort-link").click(function (event) {
+            event.preventDefault(); // Prevent page reload
+
+            var url = $(this).attr("href"); // Get sorting URL
+
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function (data) {
+                    $("#t-container").html(data); // Load response into #t-container
+                },
+                error: function () {
+                    console.error("Error loading sorted data.");
+                }
+            });
+        });
+    });
+</script>
+How It Works
+Prevents the anchor tag from navigating away.
+Fetches the sorting URL dynamically from the href attribute.
+Sends an AJAX GET request to fetch sorted data.
+Updates the #t-container div with the new sorted table.
+Let me know if you need further modifications!
+
+
+
+
+
+
+
+
+
+
+
+Search
+
+Reason
+
+
+ChatGPT ca
