@@ -137,98 +137,89 @@
   </div>
 
   <script>
-       
-      function changeprofilepic(){
-        let input = document.querySelector("#fileUpload1").files[0];
-        document.querySelector("#profileicon").src = "/images/"+input.name;
-        console.log(input);
-      }
+     $(document).ready(function () {
+            var selectedCountry = $('#countryid').val();
+            var selectedState = '@Model.stateid';
+            var selectedCity = '@Model.cityid';
 
-       $(document).ready(function () {
-       
-        var selectedCountry = $('#countryid').value;
-        var selectedState = '@Model.stateid';
-        var selectedCity = '@Model.cityid';
-        if (selectedCountry) {
-            $.getJSON('@Url.Action("GetStates")', { countryid: selectedCountry }, function (states) {
-                var statesSelect = $('#stateid');
-                statesSelect.empty();
-                statesSelect.append('<option value="">Select State</option>');
-                $.each(states, function (index, state) {
-                    var option = $('<option/>', {
-                        value: state.value,
-                        text: state.text
-                    });
-                    if (state.value == selectedState) {
-                        option.prop('selected', true);
-                    }
-                    statesSelect.append(option);
-                });
-                if (selectedState) {
-                    $.getJSON('@Url.Action("GetCities")', { stateid: selectedState }, function (cities) {    
-                        var citiesSelect = $('#cityid');
-                        citiesSelect.empty();
-                        citiesSelect.append('<option value="">Select City</option>');
-                        $.each(cities, function (index, city) {
-                            var option = $('<option/>', {
-                                value: city.value,
-                                text: city.text
-                            });
-                            if (city.value == selectedCity) {
-                                option.prop('selected', true);
-                            }
-                            citiesSelect.append(option);
+            
+            if (selectedCountry) {
+                $.getJSON('@Url.Action("GetStates")', { countryid: selectedCountry }, function (states) {
+
+                    var statesSelect = $('#stateid');
+
+                    statesSelect.empty();
+
+                    statesSelect.append('<option value="">Select State</option>');
+
+                    $.each(states, function (index, state) {
+                        var option = $('<option/>', {
+                            value: state.value,
+                            text: state.text
                         });
+                        if (state.value == selectedState) {
+                            option.prop('selected', true);
+                        }
+                        statesSelect.append(option);
                     });
-                }
-            });
-        }
-      
-        $('#countryid').change(function () {
-      
-            var countryid = $(this).val();
-            console.log(countryid);
-                  $.getJSON('@Url.Action("GetStates")', { countryid: countryid }, function (states) {
-                 console.log("hello");
-                      var statesSelect = $('#stateid');
-      
-                statesSelect.empty();
-                      statesSelect.append('<option value="">Select State</option>');
-                
-      
-                $.each(states, function (index, state) {
-                    statesSelect.append($('<option/>', {
-                        value: state.value,
-                        text: state.text
-                    }));
-                });
-                      $('#cityid').empty().append('<option value="">Select City</option>');
-            });
-        });
-              $('#stateid').change(function () {
-      
-            var stateid = $(this).val();
-      
-            $.getJSON('@Url.Action("GetCities")', { stateid: stateid }, function (cities) {
-                
-      
-                var citiesSelect = $('#cityid');
-      
-                citiesSelect.empty();
-                                citiesSelect.append('<option value="">Select City</option>');
-                 iterated over.
-                $.each(cities, function (index, city) {
-                    citiesSelect.append($('<option/>', {
-                        value: city.value,
-                        text: city.text
-                    }));
-                });
-            });
-        });
-    });
+                    if (selectedState) {
+                        $.getJSON('@Url.Action("GetCities")', { stateid: selectedState }, function (cities) {
 
-    
-</script>
+                            var citiesSelect = $('#cityid');
+
+                            citiesSelect.empty();
+                            citiesSelect.append('<option value="">Select City</option>');
+                            $.each(cities, function (index, city) {
+                                var option = $('<option/>', {
+                                    value: city.value,
+                                    text: city.text
+                                });
+                                if (city.value == selectedCity) {
+                                    option.prop('selected', true);
+                                }
+                                citiesSelect.append(option);
+                            });
+                        });
+                    }
+                });
+            
+            $('#countryid').change(function () {
+                var countryid = $(this).val();
+                console.log(countryid);
+                $.getJSON('@Url.Action("GetStates")', { countryid: countryid }, function (states) {
+                    console.log("hello");
+                    var statesSelect = $('#stateid');
+                    statesSelect.empty();
+                    statesSelect.append('<option value="">Select State</option>');
+
+                    $.each(states, function (index, state) {
+                        statesSelect.append($('<option/>', {
+                            value: state.value,
+                            text: state.text
+                        }));
+                    });
+                    $('#cityid').empty().append('<option value="">Select City</option>');
+                });
+            });
+            $('#stateid').change(function () {
+                var stateid = $(this).val();
+                $.getJSON('@Url.Action("GetCities")', { stateid: stateid }, function (cities) {
+
+                    var citiesSelect = $('#cityid');
+                    citiesSelect.empty();
+                    citiesSelect.append('<option value="">Select City</option>');
+                    $.each(cities, function (index, city) {
+                        citiesSelect.append($('<option/>', {
+                            value: city.value,
+                            text: city.text
+                        }));
+                    });
+                });
+            });
+        });
+
+
+  </script>
 </body>
 
 </html>
