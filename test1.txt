@@ -183,3 +183,28 @@ this is test1
         }
   </script>
 </div>
+
+
+function sortTable(columnIndex) {
+            let table = document.getElementById("table");
+            let tbody = table.querySelector("tbody");
+            let rows = Array.from(tbody.rows);
+
+            // Toggle sorting direction
+            let ascending = table.getAttribute(`data-sort-${columnIndex}`) !== "asc";
+            table.setAttribute(`data-sort-${columnIndex}`, ascending ? "asc" : "desc");
+
+            rows.sort((rowA, rowB) => {
+                let cellA = rowA.cells[columnIndex].innerText.trim();
+                let cellB = rowB.cells[columnIndex].innerText.trim();
+
+                // Convert to number if applicable
+                let a = isNaN(cellA) ? cellA.toLowerCase() : parseFloat(cellA);
+                let b = isNaN(cellB) ? cellB.toLowerCase() : parseFloat(cellB);
+
+                return ascending ? (a > b ? 1 : -1) : (a < b ? 1 : -1);
+            });
+
+            tbody.innerHTML = "";
+            rows.forEach(row => tbody.appendChild(row));
+        }
