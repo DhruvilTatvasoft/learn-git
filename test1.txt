@@ -1,1 +1,185 @@
 this is test1
+
+
+@model userpagingdetailmodel
+<table class="table mb-0" id="table">
+  <thead>
+    <tr>
+      <th scope="col">
+        <label for="" class="ps-4">Name</label>
+        <a href=""><img src="~/images/icons8-sorting-arrows-50.png" onclick="sortTable()" style="width: 15px;" alt=""></a>
+      </th>
+      <th scope="col">Email</th>
+      <th scope="col">phone</th>
+      <th scope="col">
+        <label for="">Role</label>
+        <a href=""><img src="~/images/icons8-sorting-arrows-50.png" onclick="sortTable()" style="width: 15px;" alt=""></a>
+      </th>
+      <th scope="col">status</th>
+      <th scope="col">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (users user in Model.users)
+    {
+      <tr>
+        @if(user.profilepic != null){
+        <td class="ps-3" style="width:28%;"><img src="@user.profilepic" class="profile-icon me-3" id="profileicon" alt="" style="object-fit: cover; " />@user.name</td>
+        }
+        else{
+
+        <td class="ps-3"><img src="~/images/manager.png" class="profile-icon me-3" id="profileicon" alt="" style="object-fit: cover; " />@user.name</td>
+        }
+        <td>@user.Email</td>
+        <td>@user.phone</td>
+        <td>@user.role @user.userid</td>
+        <td>
+          @if (user.IsActive)
+          {
+            <span class="badge bg-success">Active</span>
+          }
+          else
+          {
+            <span class="badge bg-secondary">Inactive</span>
+          }
+
+
+        <td class="align-items-center ">
+          <div class="d-flex justify-content-start w-100 pb-2 h-100">
+            <a href='@Url.Action("EditUser", "Dashboard", new { Id = @user.userid })'>
+              <img src="~/images/pencil-square.svg" style="cursor: pointer;" class="me-2" alt="">
+            </a>
+            <a>
+              <img src="~/images/trash-fill.svg" id="deleteuser" onclick="deleteuser(@user.userid)"
+                style="cursor: pointer;" alt="">
+            </a>
+          </div>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
+<div class="bg-white w-100 d-flex justify-content-end align-items-center pe-2">
+  <label for="items per page:" class="me-3" style="font-size: 16px;">items per page : </label>
+  <div class="dropdown mt-2 me-2">
+    <select class="form-select form-select-lg mb-3" id="recordPerPage" onchange="loadRows()"
+      aria-label=".form-select-lg example">
+      <option value="5" selected="@(Model.maxRows == 5)">5</option>
+      <option value="10" selected="@(Model.maxRows == 10)">10</option>
+      <option value="15" selected="@(Model.maxRows == 15)">15</option>
+      <option value="20" selected="@(Model.maxRows == 20)">20</option>
+      <input type="text" hidden id="hiddenfield">
+
+  </div>
+  <label for="" class="me-2">Showing @Model.CurrentPageIndex of @(Model.totalusers)</label>
+
+  <div class="d-flex mt-1">
+    <button type="button" id="previous" class="btn btn-outline-dark btn2" data-page="@(Model.CurrentPageIndex - 1)"
+      style="
+                              padding: 6px;" @(Model.CurrentPageIndex == 1 ? "disabled" : "")><img
+        src="~/images/right-arrow-svgrepo-com.svg" style="width:25px; rotate: 180deg;" alt=""></button>
+    <button type="button" id="next" class="btn btn-outline-dark btn2 mb-2" data-page="@(Model.CurrentPageIndex + 1)"
+      data-page="@(Model.CurrentPageIndex + 1)" style="
+                              padding: 6px;" @(Model.CurrentPageIndex == Model.PageCount ? "disabled" : "")><img
+        src="~/images/right-arrow-svgrepo-com.svg" style="width:25px" alt=""></button>
+  </div>
+
+  <script>
+    
+
+      $("#next").click(function () {
+        var currentpage = $(this).data('page');
+        $.ajax({
+          url: '@Url.Action("getUsers", "Dashboard")',
+          data: { currentPage: currentpage, search: $("#search-record").val(), maxRows: $('#recordPerPage').val() },
+          method: 'GET',
+          success: function (data) {
+            $("#t-container").html(data);
+            console.log($('#recordPerPage').val());
+          },
+          error: function () {
+            console.error('Error fetching partial view.');
+          }
+        });
+      });
+    $("#previous").click(function () {
+      var currentpage = $(this).data('page');
+      $.ajax({
+        url: '@Url.Action("getUsers", "Dashboard")',
+        data: { currentPage: currentpage, search: $("#search-record").val(), maxRows: $('#recordPerPage').val() },
+        method: 'GET',
+        success: function (data) {
+          $("#t-container").html(data);
+          console.log(@Model.CurrentPageIndex);
+          console.log(currentpage);
+          console.log($('#recordPerPage').val());
+        },
+        error: function () {
+          console.error('Error fetching partial view.');
+        }
+      });
+    });
+
+    function deleteuser(userid) {
+      $.ajax({
+        url: '@Url.Action("DeleteUser", "Dashboard")',
+        type: 'GET',
+        data: { Id: userid },
+        success: function (response) {
+          @* $.(body).html(response); *@
+            $("table").html(response)
+        },
+      });
+    };
+    function edituser(userid) {
+      console.log("OK");
+      $.ajax({
+        url: '@Url.Action("EditUser", "Dashboard")',
+        type: 'GET',
+        data: { Id: userid },
+        success: function (response) {
+          console.log($('#recordPerPage').val());
+          @* Window.location.href = '@Url.Action("EditUser", "Dashboard")'+'?Id='+userid; *@
+        },
+      });
+    };
+
+    function loadRows() {
+      console.log("OK");
+      var currentpage = $(this).data('page');
+      
+      $.ajax({
+        url: '@Url.Action("getUsers", "Dashboard")',
+        type: 'GET',
+        data: { currentPage: currentpage, search: $("#search-record").val(), maxRows: $('#recordPerPage').val() },
+        success: function (response) {
+          $("#t-container").html(response);
+          console.log($('#recordPerPage').val());
+        },
+      });
+    };
+        function sortTable() {
+            let table, i, x, y;
+            table = document.querySelector("#table");
+            let switching = true;
+            while (switching) {
+                switching = false;
+                let rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    var Switch = false;
+                    console.log("sorting");
+                    x = rows[i].getElementsByTagName("TD")[0];
+                    y = rows[i + 1].getElementsByTagName("TD")[0];
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        Switch = true;
+                        break;
+                    }
+                }
+                if (Switch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                }
+            }
+        }
+  </script>
+</div>
