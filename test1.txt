@@ -316,3 +316,43 @@ public class UserDetailModel
 
     
 }here model validation for stateid and cityid is nogt showing some other validation like "The value '' is invalid." is showing
+
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    var subchecks = document.querySelectorAll(".subcheck");
+    var masterCheck = document.querySelector("#mastercheck");
+
+    masterCheck.addEventListener("change", function (event) {
+        subchecks.forEach(function (checkbox) {
+            checkbox.checked = event.target.checked;
+            toggleSwitches(checkbox);
+        });
+    });
+
+    subchecks.forEach(function (checkbox) {
+        checkbox.addEventListener("change", function () {
+            toggleSwitches(checkbox);
+        });
+        toggleSwitches(checkbox);
+    });
+
+    function toggleSwitches(checkbox) {
+        var row = checkbox.closest("tr");
+        var canViewToggle = row.querySelector('[asp-for*="can_view"]'); // Select "Can View" switch
+        var toggles = row.querySelectorAll(".toggle");
+
+        toggles.forEach(function (toggle) {
+            toggle.disabled = !checkbox.checked;
+            if (!checkbox.checked) {
+                toggle.checked = false;
+            }
+        });
+
+        // If permission checkbox is checked, enable and check "Can View"
+        if (checkbox.checked && canViewToggle) {
+            canViewToggle.checked = true;
+        }
+    }
+});
