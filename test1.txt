@@ -1,4 +1,4 @@
-<a href="#" data-bs-toggle="modal" data-bs-target="#deleteUserModal" onclick="setUserId(@user.userid)">
+I<a href="#" data-bs-toggle="modal" data-bs-target="#deleteUserModal" onclick="setUserId(@user.userid)">
   <img src="~/images/trash-fill.svg" style="cursor: pointer;" alt="Delete">
 </a>
 
@@ -41,3 +41,278 @@ function deleteUser() {
         }
     });
 }
+
+
+@{
+  Layout = "~/Views/Shared/_Sidebar&navbar.cshtml";
+}
+@model UserDetailModel
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<link rel="stylesheet" href="~/css/myprofile.css">
+<body>
+  <div class="container-fluid w-100 h-100 p-0">
+    <div id="nav-sidebar"></div>
+    <div class="row p-0 h-100 d-flex">
+      <div class="content pt-3">
+        <div class="mb-4">
+          <h1>My Profile</h1>
+        </div>
+        <div class="form-container shadow">
+          <div class="bg-img">
+            <img src="~/images/profile_div_bg.jpg" class="profile-icon" style="height:90%;"alt="" />
+          </div>
+          <div class="d-flex">
+            <div class="pfp d-flex align-items-center justify-content-center">
+              <img src="@Model.ProfilePath" class="profile-icon" id="profileicon" alt="" style="object-fit: cover; border-radius: 50%;" />
+            </div>
+           <div class="row fileUploadRow me-1 ms-1 mb-3">
+            <div class="d-flex flex-column justify-content-start">
+              <h2>Admin</h2>
+              <h2 class="Username">@Model.username</h2>
+            </div>
+          </div>
+
+          <div>
+            <form class=" pe-3 pb-3 d-flex flex-column" method="Post" asp-controller="Dashboard" style="width:97%" asp-action="updateProfile" enctype="multipart/form-data">
+            <div class=" d-flex align-items-center justify-content-center camera-icon-container ">
+              <input type="file" asp-for="profilePicPath" id="fileUpload1" hidden onchange="changeprofilepic()">
+                                            <div class="row d-flex justify-content-center">
+                                                <label for="fileUpload1" class="fileUploadLabel d-flex">
+                                                    <img src="~/images/photo-camera-interface-symbol-for-button.png"
+                                                        id="profilepic">
+                                                </label>
+                                            </div>
+            </div>
+              <div class="form-group w-100">
+                <div>
+                  <div class="row">
+                    <div class="form-floating mb-2 col-6">
+                      <input type="text" class="form-control pb-1" id="floatingInput" placeholder="name@example.com"
+                        asp-for="firstname"  />
+                        <span asp-validation-for="firstname" class="mb-4 text-danger invalidmsg"></span>
+                      <label for="floatingInput">First Name</label>
+                    </div>
+                    <div class="form-floating mb-2 col-6">
+                      <input type="text" class="form-control" id="floatingInput" asp-for="lastname" ,
+                        placeholder="name@example.com" />
+                        <span asp-validation-for="lastname" class="mb-4 text-danger invalidmsg"></span>
+                      <label for="floatingInput">Last name</label>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="form-floating mb-2 col-6">
+                      <input type="text" class="form-control col-6" id="floatingInput" asp-for="username" ,
+                        placeholder="name@example.com" />
+                        <span asp-validation-for="username" class="mb-4 text-danger invalidmsg"></span>
+                      <label for="floatingInput">User Name</label>
+                    </div>
+                    <div class="form-floating mb-2 col-6">
+                      <input type="tel" class="form-control col-6" id="floatingInput" asp-for="Phone" ,
+                        placeholder="name@example.com" />
+                        <span asp-validation-for="Phone" class="mb-4 text-danger invalidmsg"></span>
+                      <label for="floatingInput">Phone</label>
+                    </div>
+                  </div>
+                  <div class="row mb-2">
+                    <div class="form-floating col-4">
+                      <select class="form-select"  id="countryid" asp-for="countryid" 
+                                                aria-label="Floating label select example">
+                                                @foreach (var item in Model.Country)
+                                                {
+                                                    <option value="@item.Countryid">@item.Countryname</option>
+                                                }
+                                            </select>
+                      <label for="floatingSelect">Country</label>
+                        <span asp-validation-for="countryid" class="mb-4 text-danger invalidmsg"></span>
+                    </div>
+                    <div class="form-floating col-4">
+                      <select class="form-select" id="stateid" asp-for="stateid"
+                                                aria-label="Floating label select example">
+                                                <option value="">select state </option>
+                                            </select>
+                      <label for="floatingSelect">State</label>
+                        <span asp-validation-for="stateid" class="mb-4 text-danger invalidmsg"></span>
+                    </div>
+                    <div class="form-floating col-4">
+                      <select class="form-select" aria-label="Floating label select example" id="cityid"asp-for="cityid">
+                                                <option value="">select city</option>
+                                            </select>
+                                            <label for="floatingSelect">City</label>
+                        <span asp-validation-for="cityid" class="mb-4 text-danger invalidmsg"></span>
+                    </div>
+                    
+                  </div>
+
+                  <div class="row">
+                    <div class="form-floating mb-3 col-8">
+                      <input type="text" class="form-control" asp-for="address" , id="floatingInput"
+                        placeholder="name@example.com" />
+                      <label for="floatingInput">Address</label>
+                        <span asp-validation-for="address" class="mb-4 text-danger invalidmsg"></span>
+                    </div>
+                    <div class="form-floating mb-3 col-4">
+                      <input type="number" class="form-control" id="floatingInput" asp-for="Zipcode" ,
+                        placeholder="name@example.com" />
+                      <label for="floatingInput">Zipcode</label>
+                        <span asp-validation-for="Zipcode" class="mb-4 text-danger invalidmsg"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary me-2">
+                  Update
+                </button>
+                <button type="cancel" class="btn btn-outline-primary">
+                 <a asp-action="ShowDashboard" asp-controller="Dashboard" style="text-decoration: none;">cancel</a>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<script>
+  $(document).ready(function () {
+    var selectedCountry = $('#countryid').val();
+    var selectedState = '@Model.stateid';
+    var selectedCity = '@Model.cityid';
+
+    if (selectedCountry) {
+        loadStates(selectedCountry, selectedState);
+    }
+
+    $('#countryid').change(function () {
+        var countryid = $(this).val();
+        $('#stateid').empty().append('<option value="">Select State</option>');
+        $('#cityid').empty().append('<option value="">Select City</option>');
+        if (countryid) {
+            loadStates(countryid, null);
+        }
+    });
+
+    $('#stateid').change(function () {
+        var stateid = $(this).val();
+        $('#cityid').empty().append('<option value="">Select City</option>');
+        if (stateid) {
+            loadCities(stateid, null);
+        }
+    });
+
+    function loadStates(countryid, selectedState) {
+        $.getJSON('@Url.Action("GetStates")', { countryid: countryid }, function (states) {
+            var statesSelect = $('#stateid');
+            statesSelect.empty().append('<option value="">Select State</option>');
+            $.each(states, function (index, state) {
+                var option = $('<option/>', {
+                    value: state.value,
+                    text: state.text
+                });
+                if (state.value == selectedState) {
+                    option.prop('selected', true);
+                    loadCities(selectedState, selectedCity); // Load cities after selecting state
+                }
+                statesSelect.append(option);
+            });
+        });
+    }
+
+    function loadCities(stateid, selectedCity) {
+        $.getJSON('@Url.Action("GetCities")', { stateid: stateid }, function (cities) {
+            var citiesSelect = $('#cityid');
+            citiesSelect.empty().append('<option value="">Select City</option>');
+            $.each(cities, function (index, city) {
+                var option = $('<option/>', {
+                    value: city.value,
+                    text: city.text
+                });
+                if (city.value == selectedCity) {
+                    option.prop('selected', true);
+                }
+                citiesSelect.append(option);
+            });
+        });
+    }
+});
+</script>
+
+</body>
+
+</html>
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
+using DAL.Data;
+
+public class UserDetailModel
+{
+    public int? userid { get; set; }
+
+    [Required(ErrorMessage = "First Name is required")]
+    public string firstname { get; set; }
+
+    [Required(ErrorMessage = "Last name is required.")]
+    public string lastname { get; set; }
+    [Required(ErrorMessage = "Email is required.")]
+    public string email { get; set; }
+
+    [Required(ErrorMessage = "Phone number is required.")]
+    public string Phone { get; set; }
+    [Required(ErrorMessage = "Address is required.")]
+    public string address { get; set; }
+    [Required(ErrorMessage = "Role is required.")]
+    public string? role { get; set; }
+
+    public bool? status { get; set; }
+    [Required(ErrorMessage = "Role is required.")]
+    public string? Status { get; set; }
+    public List<City>? City { get; set; }
+    
+     
+
+    
+    [Required(ErrorMessage = "City is required.")]
+    public int cityid { get; set; }
+
+    public List<State>? State { get; set; }
+    // [Required(ErrorMessage = "State is required.")]
+    // public string? state { get; set; }
+    [Required(ErrorMessage = "State is required.")]
+    public int stateid { get; set; }
+    // [Required(ErrorMessage = "Country is required.")]
+    public List<Country>? Country { get; set; }
+
+    public string? country { get; set; }
+    [Required(ErrorMessage = "Country is required.")]
+    public int countryid { get; set; }
+
+    [Required(ErrorMessage = "Role is required.")]
+    public List<string>? Role { get; set; }
+
+    
+
+    [Required(ErrorMessage = "Zipcode is required.")]
+    public string? Zipcode { get; set; }
+    [Required(ErrorMessage = "Username is required.")]
+    public string? username { get; set; }
+
+    [Required(ErrorMessage = "Password is required.")]
+    public string? password { get; set; } = null;
+    public IFormFile profilePicPath {get;set;}
+    public string ProfilePath {get;set;}
+
+    [Required(ErrorMessage = "State is required.")]
+    public string? statename {get;set;}
+    
+    [Required(ErrorMessage = "City is required.")]
+    public string? cityname {get;set;}
+
+    
+}here model validation for stateid and cityid is nogt showing some other validation like "The value '' is invalid." is showing
