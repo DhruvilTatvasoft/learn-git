@@ -356,3 +356,19 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 });
+
+
+
+
+
+public void AddPermission(Rolesandpermission permission)
+{
+    var exists = _context.Rolesandpermissions
+        .Any(p => p.Permissionid == permission.Permissionid && p.Roleid == permission.Roleid);
+    
+    if (!exists)
+    {
+        _context.Rolesandpermissions.Add(permission);
+        _context.SaveChanges();
+    }
+}
